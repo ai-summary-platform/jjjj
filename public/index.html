@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>智慧文章摘要平台</title>
+
+  <style>
+
+    body {
+      margin: 0;
+      font-family: Arial, "Microsoft JhengHei", sans-serif;
+      background: #121212;
+      color: white;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 900px;
+      margin: 40px auto;
+      background: #1e1e1e;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    }
+
+    h1 {
+      text-align: center;
+      color: #00c2ff;
+      margin-bottom: 30px;
+    }
+
+    label {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    select,
+    textarea,
+    button {
+      width: 100%;
+      box-sizing: border-box;
+      border: none;
+      border-radius: 12px;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+
+    select {
+      padding: 14px;
+      background: #2a2a2a;
+      color: white;
+    }
+
+    textarea {
+      height: 280px;
+      background: #2a2a2a;
+      color: white;
+      padding: 15px;
+      resize: vertical;
+      line-height: 1.8;
+    }
+
+    button {
+      padding: 16px;
+      background: #00c2ff;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 25px;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #00a6d6;
+    }
+
+    .result {
+      margin-top: 30px;
+      background: #2a2a2a;
+      padding: 20px;
+      border-radius: 15px;
+      min-height: 120px;
+      line-height: 1.8;
+      white-space: pre-wrap;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 25px;
+      color: #888;
+    }
+
+    .loading {
+      color: #00c2ff;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>AI 智慧文章摘要平台</h1>
+
+    <label>選擇 AI 模型：</label>
+
+    <select id="ai">
+      <option value="gpt-4.1-mini">GPT-4.1 Mini（快速）</option>
+      <option value="gpt-4.1">GPT-4.1（高品質）</option>
+      <option value="gpt-4o-mini">GPT-4o Mini（高速）</option>
+      <option value="gpt-4o">GPT-4o（最強）</option>
+    </select>
+
+    <br><br>
+
+    <label>文章內容：</label>
+
+    <textarea
+      id="inputText"
+      placeholder="請貼上文章內容..."
+    ></textarea>
+
+    <button onclick="summarize()">
+      開始摘要
+    </button>
+
+    <div
+      id="result"
+      class="result"
+    >
+      摘要結果會顯示在這裡
+    </div>
+
+    <div class="footer">
+      AI Summary Platform
+    </div>
+
+  </div>
+
+  <script>
+
+    async function summarize() {
+
+      const text = document.getElementById("inputText").value;
+
+      const ai = document.getElementById("ai").value;
+
+      const result = document.getElementById("result");
+
+      if (!text.trim()) {
+
+        alert("請輸入文章");
+
+        return;
+      }
+
+      result.innerHTML =
+        "<span class='loading'>AI 摘要中，請稍候...</span>";
+
+      try {
+
+        const response = await fetch("/summarize", {
+
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json"
+          },
+
+          body: JSON.stringify({
+            text,
+            ai
+          })
+
+        });
+
+        const data = await response.json();
+
+        if (data.summary) {
+
+          result.innerText = data.summary;
+
+        } else {
+
+          result.innerText =
+            data.error || "摘要失敗";
+
+        }
+
+      } catch (error) {
+
+        result.innerText =
+          "伺服器連線失敗";
+
+      }
+
+    }
+
+  </script>
+
+</body>
+</html>
